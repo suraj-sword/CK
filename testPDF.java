@@ -1,7 +1,6 @@
 package PDFReader;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
 import org.testng.Assert;
 import java.io.BufferedInputStream;
 import java.io.IOException;
