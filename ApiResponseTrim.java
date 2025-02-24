@@ -64,7 +64,7 @@ public class ApiResponseTrim {
             .header("auth-module", "1")
             .header("auth-mav", "2821")
             .header("Auth-Partner", "2000009")
-            .header("Authorization", "Bearer ZWyqh6CdC3uygi4Kc5okp/JJ+GYCoRiOmbfZ7wdriAkwbyMehM3P9EJRtUNRrziu")
+            .header("Authorization", "Bearer ZWyqh6CdC3uygiOmbfZ7wdriAkwbyMehM3P9EJRtUNRrziu")
             .body("{\"startDate\":1722450600000,\"endDate\":1730399399999,\"groupBy\":\"SERVICE\",\"period\":\"MONTHLY\",\"filterDetailMap\":{}}")
             .when()
             .post(apiEndpoint);
