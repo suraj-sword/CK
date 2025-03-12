@@ -58,7 +58,7 @@ public class apiResponse {
             .header("auth-module", "1")
             .header("auth-mav", "2821")
             .header("Auth-Partner", "2000009")
-            .header("Authorization", "Bearer ZWyqh6CdC3uygi4Kc5okp/driAkwbyMehM3P9EJRtUNRrziu")
+            .header("Authorization", "Bearer RBkL047SOKK17tPaUNT5kkn1pQwK0AWtG/3iK0wCujunGTTLtboDszauXmLHOrnE")
             .body("{\"startDate\":1722450600000,\"endDate\":1730399399999,\"groupBy\":\"SERVICE\",\"period\":\"MONTHLY\",\"filterDetailMap\":{}}")
             .when()
             .post(apiEndpoint);

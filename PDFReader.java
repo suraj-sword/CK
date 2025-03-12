@@ -1,5 +1,6 @@
 package PDFReader;
 
+import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
@@ -53,7 +54,45 @@ public class PDFReader {
         return images;
     }
     
-    // Extract images from PDF
+    
+    // Extract only relevant images from PDF (if the size is between 30 KB and 150 KB)
+
+    public void PDFBoxExtractImages(PDDocument document) throws Exception {
+        PDPageTree list = document.getPages();
+        for (PDPage page : list) {
+            PDResources pdResources = page.getResources();
+            for (COSName c : pdResources.getXObjectNames()) {
+                PDXObject o = pdResources.getXObject(c);
+                if (o instanceof PDImageXObject) {
+                    PDImageXObject pdImageXObject = (PDImageXObject) o;
+                    BufferedImage image = pdImageXObject.getImage();
+
+                    // Save the image to a temporary file to check its size
+                    File tempFile = new File("./Pdf1/" + System.nanoTime() + ".png");
+                    ImageIO.write(image, "png", tempFile);
+
+                    // Check the file size (in bytes)
+                    long fileSize = tempFile.length(); // file size in bytes
+
+                    // Convert the file size to KB
+                    long fileSizeInKB = fileSize / 1024; // file size in KB
+
+                    // Only save the image if the size is between 30 KB and 150 KB
+                    if (fileSizeInKB >= 30 && fileSizeInKB <= 150) {
+                    	
+                        // Move the file to the correct location if needed
+                        System.out.println("Image saved: " + tempFile.getAbsolutePath());
+                    } else {
+                        // Delete the temporary file if the size is not in the desired range
+                        tempFile.delete();
+                    }
+                }
+            }
+        }
+    }
+     
+    
+   /* // Extract images all images from PDF
     public void PDFBoxExtractImages (PDDocument document) throws Exception {
     	PDPageTree list = document.getPages();
     	for (PDPage page : list) {
@@ -66,5 +105,5 @@ public class PDFReader {
     			}
     		}
     	}
-    }
+    }*/
 }

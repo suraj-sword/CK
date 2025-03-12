@@ -1,4 +1,5 @@
 package PDFReader;
+
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.WebDriver;
 import org.testng.Assert;
@@ -18,11 +19,12 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-public class ApiResponseTrim {
+public class ComparePDFDataWithAPIResponse {
     WebDriver driver;
     String pdfFilePath = "C:/Users/Suraj Mishra/Downloads/1MG-ALL (2).pdf"; 
     String apiEndpoint = "https://be.qa1.cloudonomic.net/lens/cost-explorer/getCostExplorerChartTable"; 
@@ -30,7 +32,6 @@ public class ApiResponseTrim {
     @BeforeTest
     public void setup() {
         driver = new EdgeDriver();
-        
     }
 
     @Test
@@ -48,7 +49,7 @@ public class ApiResponseTrim {
         PDFTextStripper pdfStr = new PDFTextStripper();
         String pdfText = pdfStr.getText(pdfdoc);
 
-    pdfdoc.close();
+        pdfdoc.close();
 
         System.out.println("Extracted PDF Text:\n" + pdfText);     
 
@@ -60,7 +61,7 @@ public class ApiResponseTrim {
             .header("auth-module", "1")
             .header("auth-mav", "2821")
             .header("Auth-Partner", "2000009")
-            .header("Authorization", "Bearer RBkL047SOKK17tPaUNT5kkn1pQwK0AWtG/3iK0wCujunGTTLtboDszauXmLHOrnE")
+            .header("Authorization", "Bearer M/EAseXJ3ZRX2Gxez8Sseto7j7rB0tdbWcT/iTUUrvGkGmpou50vVGN+Lk1OGnj1")
             .body("{\"startDate\":1722450600000,\"endDate\":1730399399999,\"groupBy\":\"SERVICE\",\"period\":\"MONTHLY\",\"filterDetailMap\":{}}")
             .when()
             .post(apiEndpoint);
@@ -70,75 +71,88 @@ public class ApiResponseTrim {
 
         Assert.assertEquals(response.getStatusCode(), 200, "API response failed!");
 
-     // Extract data from API
+        // Extract data from API
         List<String> expectedTexts = new ArrayList<>();
 
         try {            
-          expectedTexts.addAll(response.jsonPath().getList("data.costExplorerTableData.serviceSummary.findAll { it.groupValue == 'Amazon Elastic Compute Cloud' }.costDates."));
-           
-        	
-        	//expectedTexts.addAll(response.jsonPath().getList("data.costExplorerTableData.serviceSummary.collect ['groupValue': it.groupValue, 'totalCost': it.totalCost, 'costDates': it.costDates"));
+            // Extract costDates and groupValues from API response
+            List<Object> costDates = response.jsonPath().getList("data.costExplorerTableData.serviceSummary.costDates");
+            List<Object> groupValues = response.jsonPath().getList("data.costExplorerTableData.serviceSummary.groupValue");
 
-         // expectedTexts.addAll(response.jsonPath().getList("data.costExplorerTableData.serviceSummary.collect { it.groupValue, it.totalCost, it.costDates }"));
+            // Convert List<Object> to List<String>
+            List<String> costDatesStringList = costDates.stream().map(Object::toString).collect(Collectors.toList()); // Convert each Object to String
+            List<String> groupValuesStringList = groupValues.stream().map(Object::toString).collect(Collectors.toList()); 
+                                                            
 
-        	
-        //	expectedTexts.addAll(response.jsonPath().getList("data.costExplorerTableData.serviceSummary.costDates."));
-            
-           // expectedTexts.addAll(response.jsonPath().getList("data.costExplorerTableData.serviceSummary.findAll { it.groupValue == 'Amazon Elastic Compute Cloud' }.totalCost"));
-          //  expectedTexts.addAll(response.jsonPath().getList("data.costExplorerTableData.serviceSummary.totalCost"));
+            // Add both lists to expectedTexts
+            expectedTexts.addAll(costDatesStringList);
+            expectedTexts.addAll(groupValuesStringList);
 
             if (expectedTexts.isEmpty()) {
                 throw new RuntimeException("API response does not contain expected data.");
             }
-            
+
             System.out.println("Extracted Data from API: " + expectedTexts);
         } catch (Exception e) {
             throw new RuntimeException("Error extracting API response data. Full response: " + response.asString(), e);
         }
 
-     // Compare PDF data with API data 
+        // Lists to store matched and unmatched data
+        List<String> matchedData = new ArrayList<>();
+        List<String> unmatchedData = new ArrayList<>();
+
+        // Compare PDF data with API data 
         for (Object expected : expectedTexts) {  
             String expectedText = cleanApiText(expected.toString());  
             String cleanedPdfText = cleanText(pdfText);
            
             String[] words = expectedText.split("\\s+"); // Splitting on spaces
- 
-            
-           boolean allWordsFound = true;
-  
+            boolean allWordsFound = true;
+
             for (String word : words) {
                 if (!cleanedPdfText.contains(word)) {
-                    System.out.println("Warning: Missing word in PDF: " + word);
+                    unmatchedData.add("Missing word in PDF: " + word);
                     allWordsFound = false;
                 }
             }
 
             if (allWordsFound) {
-                System.out.println("Success: Found expected words in PDF." +expectedText);
-            } else {
-                Assert.fail("Failed: Some words are missing in PDF." );
+                matchedData.add("Found expected words in PDF: " + expectedText);
             }
         }
+
+        // Print all matched and unmatched data
+        if (!matchedData.isEmpty()) {
+            System.out.println("Matched Data:");
+            matchedData.forEach(System.out::println);
         }
 
-        // Clean extracted and expected text
-        public static String cleanText(String text) {
-            return text.replaceAll("[${},]", "").trim(); 
+        if (!unmatchedData.isEmpty()) {
+            System.out.println("\nUnmatched Data:");
+            unmatchedData.forEach(System.out::println);
+        } else {
+            System.out.println("\nAll data matched successfully!");
         }
 
-        public static String cleanApiText(String text) {
-            return text.replaceAll("[=,{}]", " ").trim();
-        
+        // Fail the test if there are unmatched words
+        if (!unmatchedData.isEmpty()) {
+            Assert.fail("Failed: Some words are missing in PDF.");
         }
-        
+    }
 
-        @AfterTest
-        public void tearDown() {
-            if (driver != null) {
-                driver.quit();
-            }
+    // Clean extracted and expected text
+    public static String cleanText(String text) {
+        return text.replaceAll("[${},]", "").trim(); 
+    }
+
+    public static String cleanApiText(String text) {
+        return text.replaceAll("[=,{}]", " ").trim();
+    }
+
+    @AfterTest
+    public void tearDown() {
+        if (driver != null) {
+            driver.quit();
         }
+    }
 }
-
-
-

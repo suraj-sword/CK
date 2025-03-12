@@ -1,29 +1,19 @@
+
 package PDFReader;
 
 import java.io.File;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-
 import net.sourceforge.tess4j.ITesseract;
 import net.sourceforge.tess4j.Tesseract;
 import net.sourceforge.tess4j.TesseractException;
 
-public class tesseractOCR {
-    WebDriver driver;
- // String imagePath = "C:\\\\Users\\\\Suraj Mishra\\\\eclipse-workspace\\\\PDF\\\\Pdf\\\\65053558404800.png\";
-		String imagePath = "C:\\Users\\Suraj Mishra\\eclipse-workspace\\PDF\\Pdf\\65053558404800.png";
-    @BeforeClass
-    public void setUp() {
-        ChromeOptions options = new ChromeOptions();
-        driver = new ChromeDriver(options);
-
-    }
+public class openCVExtract {
+	
+      //  String imagePath = "C:\\Users\\Suraj Mishra\\eclipse-workspace\\PDF\\Pdf\\65053558404800.png";	   
+      // String imagePath = "C:\\Users\\Suraj Mishra\\eclipse-workspace\\PDF\\Pdf\\320984435254100.png";
+	  String imagePath = "C:\\Users\\Suraj Mishra\\eclipse-workspace\\PDF\\Pdf\\65055702114600.png";
+	    
     
-
     @Test
     public void extractTextFromImage() {
         try {
@@ -42,16 +32,11 @@ public class tesseractOCR {
             System.err.println("Error while reading image: " + e.getMessage());
         }
     }
-    
-    
-    
 
-    @AfterClass
-    public void tearDown() {
-        if (driver != null) {
-            driver.quit();
-        }
     }
-}
+
+
+
+
 
 
