@@ -70,7 +70,7 @@ public class CompareImageExtractedDataWithAPIResponsectOCR {
     .header("auth-mav", "2821")
     .header("Auth-Partner", "2000009")
     .header("Auth-Customer", "2000149")
-    .header("Authorization", "Bearer M/EAseXJ3ZRX2Gxez8Sseto7j7rB0tdbWcT/iTUUrvGkGmpou50vVGN+Lk1OGnj1")
+    .header("Authorization", "Bearer M/+Lk1OGnj1")
     .when()
     .get(apiEndpoint);
     
