@@ -60,7 +60,7 @@ public class AWSServiceWiseCostComparison {
             .header("auth-module", "1")
             .header("auth-mav", "2821")
             .header("Auth-Partner", "2000009")
-            .header("Authorization", "Bearer M/EAseXJ3ZRX2Gxez8Sseto7j7rB0tdbWcT/iTUUrvGkGmpou50vVGN+Lk1OGnj1")
+            .header("Authorization", "Bearer M/EA")
             .body("{\"startDate\":1722450600000,\"endDate\":1730399399999,\"groupBy\":\"SERVICE\",\"period\":\"MONTHLY\",\"filterDetailMap\":{}}")
             .when()
             .post(apiEndpoint);
