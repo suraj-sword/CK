@@ -60,7 +60,7 @@ public class CompareExtractedTextWithAPIResponse {
             .header("auth-mav", "2821")
             .header("Auth-Partner", "2000009")
             .header("Auth-Customer", "2000149")
-            .header("Authorization", "Bearer c5wFeNuqM5YOC5XbDACwVQr8ZWjBFLzFx9LPWn3dbCPJkHWArAz6CzETSKg+tXij")
+            .header("Authorization", "Bearer c5wFeNuqCzETSKg+tXij")
             .when()
             .get(apiEndpoint);
 
